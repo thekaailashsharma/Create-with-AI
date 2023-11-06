@@ -39,7 +39,7 @@ object ApiClient {
     ): ByteArray? {
         return try {
             client.get {
-                url("https://quickchart.io/qr?text=$text&centerImageUrl=$centerUrl$&dark=$dark&light=$light")
+                url("https://quickchart.io/qr?text=$text&centerImageUrl=$centerUrl&dark=$dark&light=$light")
                 headers {
                     append("Content-Type", "application/json")
                 }
