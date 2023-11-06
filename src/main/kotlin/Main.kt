@@ -167,13 +167,32 @@ fun App() {
                                                     databaseId = "mapping",
                                                 )
                                                 response.collections.forEach {
+                                                    println("Match found Email : ${it.id} && ${data.value}")
                                                     if (it.id == data.value) {
                                                         email.value = it.name
                                                     }
                                                 }
 
-                                                pfp.value = "https://avatars.githubusercontent.com/u/61358755?v=4"
-                                                name.value = "Kailash"
+                                                println("My Email : ${email.value}")
+
+                                                pfp.value = extractStringAttributeData(
+                                                    databases.getAttribute(
+                                                        databaseId = "logged-in",
+                                                        collectionId = email.value.substringBefore("@"),
+                                                        key = "pfp"
+                                                    )
+                                                )?.default ?: "Not Found"
+
+                                                name.value = extractStringAttributeData(
+                                                    databases.getAttribute(
+                                                        databaseId = "logged-in",
+                                                        collectionId = email.value.substringBefore("@"),
+                                                        key = "name"
+                                                    )
+                                                )?.default ?: "Not Found"
+
+                                                isAIVisible.value = true
+
                                                 isAIVisible.value = true
 
 
@@ -236,6 +255,60 @@ fun generateString(length: Int = 12): String {
         .joinToString("")
 
 }
+
+data class StringAttributeData(
+    val key: String?,
+    val type: String?,
+    val status: String?,
+    val error: String?,
+    val required: Boolean?,
+    val array: Boolean?,
+    val size: Int?,
+    val default: String?
+)
+
+suspend fun extractStringAttributeData(input: Any): StringAttributeData? {
+    try {
+        val attributeMap = input as? Map<*, *> ?: return null
+        val key = attributeMap["key"] as? String
+        val type = attributeMap["type"] as? String
+        val status = attributeMap["status"] as? String
+        val error = attributeMap["error"] as? String
+        val required = attributeMap["required"] as? Boolean
+        val array = attributeMap["array"] as? Boolean
+        val size = attributeMap["size"] as? Int
+        val default = attributeMap["default"] as? String
+
+        return StringAttributeData(key, type, status, error, required, array, size, default)
+    } catch (e: Exception) {
+        // Handle exceptions, e.g., if casting or parsing fails.
+        return null
+    }
+}
+
+data class BooleanAttributeData(val key: String, val type: String, val status: String, val error: String?, val required: Boolean, val array: Boolean, val default: Boolean)
+
+fun extractBooleanAttributeData(attribute: Any): BooleanAttributeData? {
+    return try {
+        val attributeMap = attribute as? Map<*, *>
+        if (attributeMap != null) {
+            val key = attributeMap["key"] as? String ?: ""
+            val type = attributeMap["type"] as? String ?: ""
+            val status = attributeMap["status"] as? String ?: ""
+            val error = attributeMap["error"] as? String
+            val required = attributeMap["required"] as? Boolean ?: false
+            val array = attributeMap["array"] as? Boolean ?: false
+            val default = attributeMap["default"] as? Boolean ?: false
+
+            BooleanAttributeData(key, type, status, error, required, array, default)
+        } else {
+            null // Invalid input, return null or throw an exception as needed
+        }
+    } catch (e: Exception) {
+        null // Handle exceptions by returning null or throw an exception as needed
+    }
+}
+
 
 
 
