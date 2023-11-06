@@ -31,13 +31,15 @@ object ApiClient {
         }
     }
 
-    suspend fun getQrCode(text: String): ByteArray? {
+    suspend fun getQrCode(
+        text: String,
+        centerUrl: String = "https://firebasestorage.googleapis.com/v0/b/palmapi-b548f.appspot.com/o/elogo.jpeg?alt=media%26token=a1763f07-c79f-4b1a-b02e-a88c4cb483df",
+        dark: String = "22f55a",
+        light: String = "000000"
+    ): ByteArray? {
         return try {
             client.get {
-                url("https://quickchart.io/qr?text=$text world&centerImageUrl=" +
-                        "https://firebasestorage.googleapis.com/v0/b/palmapi-b548f.appspot.com/o/" +
-                        "elogo.jpeg?alt=media%26token=a1763f07-c79f-4b1a-b02e-a88c4cb483df&dark=" +
-                        "22f55a&light=000000")
+                url("https://quickchart.io/qr?text=$text&centerImageUrl=$centerUrl$&dark=$dark&light=$light")
                 headers {
                     append("Content-Type", "application/json")
                 }
