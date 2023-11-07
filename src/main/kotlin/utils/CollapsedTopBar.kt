@@ -4,12 +4,15 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,16 +26,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import theme.COLLAPSED_TOP_BAR_HEIGHT
 import theme.appGradient
+import theme.buttonColor
 import theme.textColor
 
 @Composable
 fun CollapsedTopBarHomeScreen(
     isImageVisible: Boolean,
     imageUrl: String,
-    name: String = ""
+    name: String = "",
+    onLogout: () -> Unit = {}
 ) {
-
     Column {
+        val isDropDownVisible = remember { mutableStateOf(false) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,12 +74,40 @@ fun CollapsedTopBarHomeScreen(
                 }
             }, modifier = Modifier.padding(end = 10.dp))
             if (isImageVisible) {
-                ProfileImage(
-                    imageUrl = imageUrl,
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape),
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    ProfileImage(
+                        imageUrl = imageUrl,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape)
+                            .clickable(indication = null, interactionSource = MutableInteractionSource()) {
+                                isDropDownVisible.value = !isDropDownVisible.value
+                            },
+                    )
+                    if (isDropDownVisible.value) {
+                        DropdownMenu(
+                            expanded = isDropDownVisible.value,
+                            onDismissRequest = {
+                                isDropDownVisible.value = !isDropDownVisible.value
+                            },
+                            modifier = Modifier
+                                .background(MaterialTheme.colors.primary)
+                        ) {
+                            Button(onClick = {
+                                onLogout()
+                            } , colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = textColor,
+                            )){
+                               Text(
+                                   "Logout",
+                                   color = textColor,
+                                   fontSize = 15.sp
+                               )
+                            }
+                        }
+                    }
+                }
             }
 
         }
