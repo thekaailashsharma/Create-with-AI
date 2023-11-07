@@ -9,28 +9,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.graphics.toPainter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import data.model.ApiClient
-import dto.StringAttribute
 import io.appwrite.Client
-import io.appwrite.extensions.toJson
 import io.appwrite.models.Collection
 import io.appwrite.services.Databases
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.launch
-import org.jetbrains.skia.Color
 import theme.*
 import utils.CollapsedTopBarHomeScreen
 import utils.ProfileImage
 import utils.TypewriterText
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.security.SecureRandom
 import javax.imageio.ImageIO
 import kotlin.random.Random
 
@@ -97,7 +95,7 @@ fun App() {
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             AnimatedVisibility(qrCode.value != null) {
-                                convertByteArrayToImageBitmap(qrCode.value!!)?.let {
+                                convertByteArrayToPainter(qrCode.value!!)?.let {
                                     Image(
                                         painter = it,
                                         contentDescription = null,
@@ -236,11 +234,22 @@ fun main() = application {
     }
 }
 
-fun convertByteArrayToImageBitmap(byteArray: ByteArray): Painter? {
+fun convertByteArrayToPainter(byteArray: ByteArray): Painter? {
     try {
         val inputStream = ByteArrayInputStream(byteArray)
         val bufferedImage: BufferedImage = ImageIO.read(inputStream)
         return bufferedImage.toPainter()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
+}
+
+fun convertByteArrayToImageBitmap(byteArray: ByteArray): ImageBitmap? {
+    try {
+        val inputStream = ByteArrayInputStream(byteArray)
+        val bufferedImage: BufferedImage = ImageIO.read(inputStream)
+        return bufferedImage.toComposeImageBitmap()
     } catch (e: Exception) {
         e.printStackTrace()
     }

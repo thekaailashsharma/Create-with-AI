@@ -42,6 +42,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:2.3.2")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.appwrite:sdk-for-kotlin:4.0.0")
+    implementation("com.mxalbert.zoomable:zoomable:1.6.1")
 //    implementation("org.jetbrains.skija:skija-macos-x64:0.93.6")
 //    implementation("media.kamel:kamel-image:0.8.3")
 }
